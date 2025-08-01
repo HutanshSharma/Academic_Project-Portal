@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Environment files
+.env
+
+# mydatabase
+instance/
+
+# profile_pics
+profile_pics/
+
+#project_details
+project_details/

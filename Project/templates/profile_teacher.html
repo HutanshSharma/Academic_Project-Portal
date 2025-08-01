@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+{% block content %}
+    <main class="container dashboard">
+    <div class="profile-header">
+      <img class="rounded-circle account-img img-profile" src="{{img_src}}">
+      <div class="details">
+        <h2>{{current_user.username}}</h2>
+        <p>{{current_user.email}}</p>
+        <p>{{current_user.role.capitalize()}}</p>
+        <a class="button" href="{{url_for('users.update_profile')}}">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="proj-content">
+          <h4>Active Projects</h4>
+          <span class="proj-number">{{current_user.total_projects}}</span>
+        </div>
+        <p>Currently accepting applications</p>
+      </div>
+      
+      <div class="proj-card">
+        <div class="proj-content">
+          <h4>Submissions</h4>
+          <span class="proj-number">{{current_user.total_projects_submitted}}</span>
+        </div>
+        <p>Project Submissions</p>
+      </div>
+      
+      <div class="proj-card">
+        <div class="proj-content">
+          <h4>Submissions Evaluated</h4>
+          <span class="proj-number">{{current_user.total_projects_evaluated}}</span>
+        </div>
+        <p>Remarks Given</p>
+      </div>
+    </div>
+
+    <div class="projects-table-outer">
+    <div class="projects-table-container">
+      <div class="table-header">
+        <h2>Projects</h2>
+        <a class="button button-diff" href="{{url_for('projects.add_project')}}">Add Project</a>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Project's Title</th>
+              <th>Upload Date</th>
+              <th>Active Workers</th>
+              <th>Update</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for i in projects %}
+              <tr>
+                <td>{{i.title}}</td>
+                <td>{{i.created_at.strftime("%Y-%m-%d")}}</td>
+                <td>{{i.user_count}}</td>
+                <td><a class="btn btn-info" href="{{url_for('projects.update_project',project_id=i.id)}}">Update</a></td>
+                <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                
+                  <!-- Modal -->
+                    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" style="color:black;" id="deleteModalLabel">Delete Project Permanently</h5>
+                              <button type="button" style="margin:0.01rem;" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                          </div>
+                          <div class="modal-footer">
+                              <form action="{{url_for('projects.delete_project',project_id=i.id)}}" method="POST">
+                                  <input type="submit" class="btn btn-danger" value="Delete">
+                              </form>
+                          </div>
+                          </div>
+                      </div>
+                    </div>
+                
+                </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="outer-position-btn">
+    {% if plm %}
+      <a class="btn btn-outline-primary position-btn" href="{{url_for('projects.more_info')}}">Load More</a>
+    {% endif %}
+    </div>
+    </div>
+    
+    <div class="projects-table-outer">
+    <div class="projects-table-container">
+      <div class="table-header">
+        <h2>Submissions</h2>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Project's Title</th>
+              <th>Upload Date</th>
+              <th>Submitted by</th>
+              <th>Submitted on</th>
+              <th>Evaluate</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for i in submissions %}
+              <tr>
+                <td>{{i.project.title}}</td>
+                <td>{{i.project.created_at.strftime("%Y-%m-%d")}}</td>
+                <td>{{i.user.username}}</td>
+                <td>{{i.submitted_at.strftime("%Y-%m-%d")}}</td>
+                {% if i.evaluation %}
+                  <td><a class="btn btn-dark" >Evaluated</a></td>
+                {% else %}
+                  <td><a class="btn btn-outline-success" href="{{url_for('projects.evaluate',id=i.id)}}">Evaluate</a></td>
+                {% endif %}    
+                </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="outer-position-btn">
+    {% if slm %}
+      <a class="btn btn-outline-primary position-btn" href="{{url_for('projects.more_info_submission')}}">Load More</a>
+    {% endif %}
+    </div>
+    </div>
+
+    <div class="projects-table-outer">
+    <div class="projects-table-container">
+      <div class="table-header">
+        <h2>Evaluated Projects</h2>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Project's Title</th>
+              <th>Submitted on</th>
+              <th>Submitted by</th>
+              <th>Evaluated on</th>
+              <th>Reviews given</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tbody>
+              {% for i in evaluation %}
+              <tr>
+                <td>{{i.project.title}}</td>
+                <td>{{i.project.created_at.strftime("%Y-%m-%d")}}</td>
+                <td>{{i.submission.user.username}}</td>
+                <td>{{i.submission.submitted_at.strftime("%Y-%m-%d")}}</td>
+                <td><a class="btn btn-outline-info" href="{{url_for('projects.reviews',id=i.id)}}">See Reviews given</a></td>
+              </tr>
+              {% endfor %}
+          </tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="outer-position-btn">
+    {% if elm %}
+      <a class="btn btn-outline-primary position-btn" href="{{url_for('projects.more_info_evaluation')}}">Load More</a>
+    {% endif %}
+    </div>
+    </div>
+
+  </main>
+{% endblock content %}

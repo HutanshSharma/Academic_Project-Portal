@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block content %}
+  <main class="container">
+    <section class="top-section">
+      <h1>Discover Great Academic Opportunities</h1>
+      <p>Connect with professors and find research projects that suits your skills</p>
+    </section>
+
+    <section class="search">
+      <div class="search-container">
+        <form action="" method="POST">
+          {{form.hidden_tag()}}
+          <div class="search-here">
+            <div class="search-category">
+                {% for i in form.category %}
+                  <span>{{i()}}</span>
+                {% endfor %}
+            </div>
+            <div class="search-box">
+              {{form.search(placeholder=form.search.label.text,class="search-input")}}
+            </div>
+            <div>
+              {{form.submit(class="search-btn button button-diff")}}
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section>
+      <div class="projects-grid">
+        {% for project in projects %}
+        <article class="project-card">
+          <div class="project-content">
+            <div class="project-user-profile">
+              <img class="rounded-circle account-img project-image" src="{{url_for('static',filename='/profile_pics/'+project.user.profile_picture)}}">
+              <div class="project-profile">
+                <span class="uploader">Uploaded by : {{project.user.username}}</span>
+                <span class="upload-date">
+                  <i class="fa-regular fa-calendar"></i>
+                  Uploaded on : 
+                  {{project.created_at.strftime("%Y-%m-%d")}}
+                </span>
+              </div>
+            </div>
+            <h3>{{project.title}}</h3>
+            <p>{{project.description}}</p>
+            <div class="skills">
+              <h4>Skills Required : </h4>
+              <ul>
+                {% for i in project.skills.split(',') %}
+                  <li>{{i.strip()}}</li>
+                {% endfor %}
+              </ul>
+            </div>
+              <div class="project-footer">
+                <a class="button button-diff button-home" href="{{url_for('projects.project_details',project_id=project.id)}}">Details</a>
+                {% if current_user.role=='student' %}
+                <a class="button button-diff button-home" href="{{url_for('projects.take_proj',project_id=project.id,page=request.args.get('page'))}}">Apply Now</a>
+                {% endif %}
+              </div> 
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    <div class="paginate">
+      {% if page %}
+        {% for i in projects.iter_pages(left_edge=1, right_edge=1,left_current=1,right_current=1) %}
+          {% if i %}
+            {% if i==page %}
+              <a class="btn btn-info" href="{{url_for('main.home',page=i)}}">{{i}}</a>
+            {% else %}
+              <a class="btn btn-outline-info" href="{{url_for('main.home',page=i)}}">{{i}}</a>
+            {% endif %}
+          {% else %}
+            <p>...</p>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+    <section class="benefits">
+      <h2>Why Join Research Projects?</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <h3>Gain Experience</h3>
+          <p>Work on real-world research projects and build your academic portfolio and skills</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-id-card-clip"></i>
+          </div>
+          <h3>Network with Professors</h3>
+          <p>Build relationships with leading academics in your field</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <h3>Advance Your Career</h3>
+          <p>Enhance your resume and open doors to future opportunities</p>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock content %}
